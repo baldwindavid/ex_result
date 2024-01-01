@@ -6,8 +6,19 @@ defmodule ExResult.MixProject do
       app: :ex_result,
       version: "0.0.1",
       elixir: "~> 1.14",
+      description: "Helpers for wrapping, unwrapping, and transforming result tuples",
       start_permanent: Mix.env() == :prod,
+      package: package(),
       deps: deps()
+    ]
+  end
+
+  def package do
+    [
+      maintainers: ["David Baldwin"],
+      licenses: ["Apache-2.0"],
+      links: %{"GitHub" => "https://github.com/baldwindavid/ex_result"},
+      files: ~w(mix.exs README.md lib)
     ]
   end
 
