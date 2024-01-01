@@ -9,7 +9,15 @@ defmodule ExResult.MixProject do
       description: "Helpers for wrapping, unwrapping, and transforming result tuples",
       start_permanent: Mix.env() == :prod,
       package: package(),
-      deps: deps()
+      deps: deps(),
+      docs: docs()
+    ]
+  end
+
+  def docs do
+    [
+      main: "ExResult",
+      source_url_pattern: "https://github.com/baldwindavid/ex_result/blob/main/%{path}#L%{line}"
     ]
   end
 
