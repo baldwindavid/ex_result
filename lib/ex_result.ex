@@ -10,9 +10,16 @@ defmodule ExResult do
   These helpers are most useful in pipelines.
   """
 
+  @type ok_result :: {:ok, any()}
+  @type error_result :: {:error, any()}
+  @type result :: ok_result() | error_result()
+  @type update_fn :: (any() -> any())
+
   @doc """
-  Guard to check if a value is a result tuple. A result tuple is a tuple of the
-  form `{:ok, value}` or `{:error, value}` and NOTHING else.
+  Guard to check if a value is a result tuple.
+
+  A result tuple is a tuple of the form `{:ok, value}` or `{:error, value}` and
+  NOTHING else.
 
   ### Examples
 
@@ -29,9 +36,10 @@ defmodule ExResult do
            when is_tuple(value) and tuple_size(value) == 2 and elem(value, 0) in [:ok, :error]
 
   @doc """
-  Helper function to wrap a value in an `:ok` tuple. Useful in pipelines where
-  you want to wrap a value in an `:ok` tuple. If the value is already an `:ok`
-  tuple, it will be returned as-is.
+  Wraps a value in an `:ok` tuple.
+
+  Useful in pipelines where you want to wrap a value in an `:ok` tuple. If the
+  value is already an `:ok` tuple, it will be returned as-is.
 
   ### Examples
 
@@ -41,15 +49,32 @@ defmodule ExResult do
       iex> ok({:ok, 1})
       {:ok, 1}
   """
+  @spec ok(any()) :: ok_result()
   def ok({:ok, _value} = result), do: result
   def ok(value), do: {:ok, value}
 
+  @doc """
+  Wraps a value in an `:error` tuple.
+
+  Useful in pipelines where you want to wrap a value in an `:error` tuple. If
+  the value is already an `:error` tuple, it will be returned as-is.
+
+  ### Examples
+
+      iex> error(:foo)
+      {:error, :foo}
+
+      iex> error({:error, :foo})
+      {:error, :foo}
+  """
+  @spec error(any()) :: error_result()
   def error({:error, _value} = result), do: result
   def error(value), do: {:error, value}
 
   @doc """
-  Helper function to check if a value is an `:ok` tuple. Useful in pipelines
-  where you want to check if a value is an `:ok` tuple.
+  Checks if a value is an `:ok` tuple.
+
+  Useful in pipelines where you want to check if a value is an `:ok` tuple.
 
   ### Examples
 
@@ -62,12 +87,14 @@ defmodule ExResult do
       iex> ok?(1)
       false
   """
-  def ok?({:ok, _value}), do: true
+  @spec ok?(any()) :: boolean()
+  def ok?({:ok, _value} = _result), do: true
   def ok?(_other), do: false
 
   @doc """
-  Helper function to check if a value is an `:error` tuple. Useful in pipelines
-  where you want to check if a value is an `:error` tuple.
+  Checks if a value is an `:error` tuple.
+
+  Useful in pipelines where you want to check if a value is an `:error` tuple.
 
   ### Examples
 
@@ -80,14 +107,16 @@ defmodule ExResult do
       iex> error?(1)
       false
   """
-  def error?({:error, _value}), do: true
+  @spec error?(any()) :: boolean()
+  def error?({:error, _value} = _result), do: true
   def error?(_other), do: false
 
   @doc """
-  Helper function to unwrap the value from an `:ok` tuple, or to return an
-  `:error` tuple as-is. If the value is not an `:ok` or `:error` tuple, an
-  error will be raised. Useful in pipelines where you want to unwrap an `:ok`
-  tuple, but pass an `:error` tuple through.
+  Unwraps a value from an `:ok` tuple or returns an `:error` tuple as-is.
+
+  If the value is not an `:ok` or `:error` tuple, an error will be raised.
+  Useful in pipelines where you want to unwrap an `:ok` tuple, but pass an
+  `:error` tuple through.
 
   ### Examples
 
@@ -98,16 +127,18 @@ defmodule ExResult do
       {:error, :foo}
 
       iex> unwrap(1)
-      ** (RuntimeError) Not an ok tuple
+      ** (ArgumentError) 1st argument: not an :ok or :error result tuple
   """
-  def unwrap({:ok, value}), do: value
+  @spec unwrap(result()) :: any()
+  def unwrap({:ok, value} = _result), do: value
   def unwrap({:error, _} = result), do: result
   def unwrap(_other_result), do: raise_not_result()
 
   @doc """
-  Helper function to uwrap the value from an `:ok` tuple, or to raise an error
-  if it is not an `:ok` tuple. Useful in pipelines where you want to modify an
-  OK result, but raise an error if it is not an OK tuple.
+  Unwraps a value from an `:ok` tuple or raises if not an `:ok` tuple.
+
+  Useful in pipelines where you want to modify an OK result, but raise an error
+  if it is not an OK tuple.
 
   ### Examples
 
@@ -115,19 +146,21 @@ defmodule ExResult do
       1
 
       iex> unwrap!({:error, :foo})
-      ** (RuntimeError) Not an ok tuple
+      ** (ArgumentError) 1st argument: not an :ok result tuple
 
       iex> unwrap!(1)
-      ** (RuntimeError) Not an ok tuple
+      ** (ArgumentError) 1st argument: not an :ok result tuple
   """
-  def unwrap!({:ok, value}), do: value
+  @spec unwrap!(ok_result()) :: any()
+  def unwrap!({:ok, value} = _result), do: value
   def unwrap!(_other_result), do: raise_not_ok_result()
 
   @doc """
-  Helper function to update the value of an `:ok` tuple, or to return an :error
-  tuple as-is. If the value is not an `:ok` or `:error` tuple, an error will be
-  raised. Useful in pipelines where you want to modify an OK result, but pass an
-  error through.
+  Updates the "value" of an `:ok` tuple or returns an :error tuple as-is.
+
+  If the value is not an `:ok` or `:error` tuple, an error will be raised.
+  Useful in pipelines where you want to modify an OK result, but pass an error
+  through.
 
   ### Examples
 
@@ -138,16 +171,18 @@ defmodule ExResult do
       {:error, :foo}
 
       iex> update(1, &(&1 + 1))
-      ** (RuntimeError) Not an ok or error tuple
+      ** (ArgumentError) 1st argument: not an :ok or :error result tuple
   """
-  def update({:ok, value}, update_fn), do: {:ok, update_fn.(value)}
+  @spec update(result(), update_fn()) :: result()
+  def update({:ok, value} = _result, update_fn), do: {:ok, update_fn.(value)}
   def update({:error, _} = result, _update_fn), do: result
   def update(_other_result, _update_fn), do: raise_not_result()
 
   @doc """
-  Helper function to update the value of an `:ok` tuple, or to raise an error
-  if it is not an `:ok` tuple. Useful in pipelines where you want to modify an
-  OK result, but raise an error if it is not an OK tuple.
+  Updates the "value" of an `:ok` tuple or raises if not an `:ok` tuple.
+
+  Useful in pipelines where you want to modify an OK result, but raise an error
+  if it is not an OK tuple.
 
   ### Examples
 
@@ -155,20 +190,22 @@ defmodule ExResult do
       {:ok, 2}
 
       iex> update!({:error, :foo}, &(&1 + 1))
-      ** (RuntimeError) Not an ok tuple
+      ** (ArgumentError) 1st argument: not an :ok result tuple
 
       iex> update!(1, &(&1 + 1))
-      ** (RuntimeError) Not an ok tuple
+      ** (ArgumentError) 1st argument: not an :ok result tuple
   """
-  def update!({:ok, value}, update_fn), do: {:ok, update_fn.(value)}
+  @spec update!(ok_result(), update_fn()) :: ok_result()
+  def update!({:ok, value} = _result, update_fn), do: {:ok, update_fn.(value)}
   def update!(_other_result, _update_fn), do: raise_not_ok_result()
 
   @doc """
-  Helper function to unwrap the value from an `:ok` tuple and execute a
-  transform on it, or to return an `:error` tuple as-is. If the value is not an
-  `:ok` or `:error` tuple, an error will be raised. Useful in pipelines where
-  you want to unwrap and transform an `:ok` tuple value, but pass an `:error`
-  tuple through.
+  Unwraps the "value" from an `:ok` tuple and executes a transform on it or
+  returns an `:error` tuple as-is.
+
+  If the value is not an `:ok` or `:error` tuple, an error will be raised.
+  Useful in pipelines where you want to unwrap and transform an `:ok` tuple
+  value, but pass an `:error` tuple through.
 
   ### Examples
 
@@ -179,16 +216,19 @@ defmodule ExResult do
       {:error, :foo}
 
       iex> unwrap_and_update(1, &(&1 * 2))
-      ** (RuntimeError) Not an ok tuple
+      ** (ArgumentError) 1st argument: not an :ok or :error result tuple
   """
-  def unwrap_and_update({:ok, value}, then_fn), do: then_fn.(value)
+  @spec unwrap_and_update(result(), update_fn()) :: result()
+  def unwrap_and_update({:ok, value} = _result, then_fn), do: then_fn.(value)
   def unwrap_and_update({:error, _} = result, _then_fn), do: result
   def unwrap_and_update(_other_result, _then_fn), do: raise_not_result()
 
   @doc """
-  Helper function to execute a transform on the value of an `:ok` tuple, or to
-  raise an error if it is not an `:ok` tuple. Useful in pipelines where you
-  want to modify an OK result, but raise an error if it is not an OK tuple.
+  Executes a transform on the "value" of an `:ok` tuple or raises if not an
+  `:ok` tuple.
+
+  Useful in pipelines where you want to modify an OK result, but raise an error
+  if it is not an OK tuple.
 
   ### Examples
 
@@ -196,12 +236,13 @@ defmodule ExResult do
       2
 
       iex> unwrap_and_update!({:error, :foo}, &(&1 * 2))
-      ** (RuntimeError) Not an ok tuple
+      ** (ArgumentError) 1st argument: not an :ok result tuple
 
       iex> unwrap_and_update!(1, &(&1 * 2))
-      ** (RuntimeError) Not an ok tuple
+      ** (ArgumentError) 1st argument: not an :ok result tuple
   """
-  def unwrap_and_update!({:ok, value}, then_fn), do: then_fn.(value)
+  @spec unwrap_and_update!(ok_result(), update_fn()) :: any()
+  def unwrap_and_update!({:ok, value} = _result, then_fn), do: then_fn.(value)
   def unwrap_and_update!(_other_result, _then_fn), do: raise_not_ok_result()
 
   defp raise_not_ok_result do
