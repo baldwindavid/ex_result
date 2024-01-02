@@ -38,8 +38,7 @@ defmodule ExResult do
   @doc """
   Wraps a value in an `:ok` tuple.
 
-  Useful in pipelines where you want to wrap a value in an `:ok` tuple. If the
-  value is already an `:ok` tuple, it will be returned as-is.
+  If the value is already an `:ok` tuple, it will be returned as-is.
 
   ### Examples
 
@@ -56,8 +55,7 @@ defmodule ExResult do
   @doc """
   Wraps a value in an `:error` tuple.
 
-  Useful in pipelines where you want to wrap a value in an `:error` tuple. If
-  the value is already an `:error` tuple, it will be returned as-is.
+  If the value is already an `:error` tuple, it will be returned as-is.
 
   ### Examples
 
@@ -73,8 +71,6 @@ defmodule ExResult do
 
   @doc """
   Checks if a value is an `:ok` tuple.
-
-  Useful in pipelines where you want to check if a value is an `:ok` tuple.
 
   ### Examples
 
@@ -93,8 +89,6 @@ defmodule ExResult do
 
   @doc """
   Checks if a value is an `:error` tuple.
-
-  Useful in pipelines where you want to check if a value is an `:error` tuple.
 
   ### Examples
 
@@ -115,8 +109,6 @@ defmodule ExResult do
   Unwraps a value from an `:ok` tuple or returns an `:error` tuple as-is.
 
   If the value is not an `:ok` or `:error` tuple, an error will be raised.
-  Useful in pipelines where you want to unwrap an `:ok` tuple, but pass an
-  `:error` tuple through.
 
   ### Examples
 
@@ -137,9 +129,6 @@ defmodule ExResult do
   @doc """
   Unwraps a value from an `:ok` tuple or raises if not an `:ok` tuple.
 
-  Useful in pipelines where you want to modify an OK result, but raise an error
-  if it is not an OK tuple.
-
   ### Examples
 
       iex> unwrap!({:ok, 1})
@@ -159,8 +148,6 @@ defmodule ExResult do
   Updates the "value" of an `:ok` tuple or returns an :error tuple as-is.
 
   If the value is not an `:ok` or `:error` tuple, an error will be raised.
-  Useful in pipelines where you want to modify an OK result, but pass an error
-  through.
 
   ### Examples
 
@@ -180,9 +167,6 @@ defmodule ExResult do
 
   @doc """
   Updates the "value" of an `:ok` tuple or raises if not an `:ok` tuple.
-
-  Useful in pipelines where you want to modify an OK result, but raise an error
-  if it is not an OK tuple.
 
   ### Examples
 
@@ -204,8 +188,6 @@ defmodule ExResult do
   returns an `:error` tuple as-is.
 
   If the value is not an `:ok` or `:error` tuple, an error will be raised.
-  Useful in pipelines where you want to unwrap and transform an `:ok` tuple
-  value, but pass an `:error` tuple through.
 
   ### Examples
 
@@ -226,9 +208,6 @@ defmodule ExResult do
   @doc """
   Executes a transform on the "value" of an `:ok` tuple or raises if not an
   `:ok` tuple.
-
-  Useful in pipelines where you want to modify an OK result, but raise an error
-  if it is not an OK tuple.
 
   ### Examples
 
