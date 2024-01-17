@@ -5,7 +5,7 @@ defmodule ExResult do
 
   An opinionated stance on what constitutes a "result" tuple is taken here. A
   result tuple is a tuple of the form `{:ok, value}` or `{:error, value}` and
-  NOTHING else.
+  nothing else.
 
   These helpers are most useful in pipelines.
   """
@@ -20,7 +20,7 @@ defmodule ExResult do
   Guard to check if a value is a result tuple.
 
   A result tuple is a tuple of the form `{:ok, value}` or `{:error, value}` and
-  NOTHING else.
+  nothing else.
 
   ### Examples
 
