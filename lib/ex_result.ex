@@ -39,12 +39,15 @@ defmodule ExResult do
   @doc """
   Wraps a value in an `:ok` tuple.
 
-  If the value is already an `:ok` tuple, it will be returned as-is.
+  If the value is already a result tuple, it will be returned as-is.
 
   ### Examples
 
       iex> ok(1)
       {:ok, 1}
+
+      iex> ok({:error, :foo})
+      {:error, :foo}
 
       iex> ok({:ok, 1})
       {:ok, 1}
@@ -56,12 +59,15 @@ defmodule ExResult do
   @doc """
   Wraps a value in an `:error` tuple.
 
-  If the value is already an `:error` tuple, it will be returned as-is.
+  If the value is already a result tuple, it will be returned as-is.
 
   ### Examples
 
       iex> error(:foo)
       {:error, :foo}
+
+      iex> error({:ok, 1})
+      {:ok, 1}
 
       iex> error({:error, :foo})
       {:error, :foo}
