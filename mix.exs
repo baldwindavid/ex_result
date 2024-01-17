@@ -4,7 +4,7 @@ defmodule ExResult.MixProject do
   def project do
     [
       app: :ex_result,
-      version: "0.0.4",
+      version: "0.0.5",
       elixir: "~> 1.14",
       description: "Helpers for wrapping, unwrapping, and transforming result tuples",
       start_permanent: Mix.env() == :prod,

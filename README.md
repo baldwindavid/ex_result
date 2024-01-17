@@ -16,7 +16,7 @@ Add the latest release to your `mix.exs` file:
 ```elixir
 def deps do
   [
-    {:ex_result, "~> 0.0.4"}
+    {:ex_result, "~> 0.0.5"}
   ]
 end
 ```
