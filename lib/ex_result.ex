@@ -5,7 +5,7 @@ defmodule ExResult do
 
   An opinionated stance on what constitutes a "result" tuple is taken here. A
   result tuple is a tuple of the form `{:ok, value}` or `{:error, value}` and
-  nothing else.
+  nothing else. All `unwrap*` functions solely unwrap `{:ok, value}` tuples.
 
   These helpers are most useful in pipelines.
   """
