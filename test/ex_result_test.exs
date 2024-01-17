@@ -24,6 +24,10 @@ defmodule ExResultTest do
       assert ExResult.ok({:ok, 1}) == {:ok, 1}
     end
 
+    test "returns an error tuple as-is" do
+      assert ExResult.ok({:error, :foo}) == {:error, :foo}
+    end
+
     test "wraps a non-ok tuple in an ok tuple" do
       assert ExResult.ok(1) == {:ok, 1}
     end
@@ -32,6 +36,10 @@ defmodule ExResultTest do
   describe "error/1" do
     test "returns an error tuple as-is" do
       assert ExResult.error({:error, :foo}) == {:error, :foo}
+    end
+
+    test "returns an ok tuple as-is" do
+      assert ExResult.error({:ok, 1}) == {:ok, 1}
     end
 
     test "wraps a non-error tuple in an error tuple" do

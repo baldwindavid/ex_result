@@ -9,6 +9,7 @@ defmodule ExResult do
 
   These helpers are most useful in pipelines.
   """
+  require ExResult
 
   @type ok_result :: {:ok, any()}
   @type error_result :: {:error, any()}
@@ -49,7 +50,7 @@ defmodule ExResult do
       {:ok, 1}
   """
   @spec ok(any()) :: ok_result()
-  def ok({:ok, _value} = result), do: result
+  def ok(result) when is_result(result), do: result
   def ok(value), do: {:ok, value}
 
   @doc """
@@ -66,7 +67,7 @@ defmodule ExResult do
       {:error, :foo}
   """
   @spec error(any()) :: error_result()
-  def error({:error, _value} = result), do: result
+  def error(result) when is_result(result), do: result
   def error(value), do: {:error, value}
 
   @doc """
